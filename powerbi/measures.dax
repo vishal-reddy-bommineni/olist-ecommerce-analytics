@@ -1,0 +1,91 @@
+// DAX measures for the Olist Power BI report.
+// Create a table called _Measures (Home > Enter data > OK) and add each measure to it.
+// Tables come from data/marts/*.parquet (see BUILD_GUIDE.md).
+
+Valid Orders =
+CALCULATE ( COUNTROWS ( fct_orders ), fct_orders[is_valid_order] = TRUE () )
+
+GMV =
+CALCULATE ( SUM ( fct_orders[order_value] ), fct_orders[is_valid_order] = TRUE () )
+
+Product Revenue =
+CALCULATE ( SUM ( fct_order_items[price] ), fct_order_items[is_valid_order] = TRUE () )
+
+Avg Order Value =
+DIVIDE (
+    [GMV],
+    CALCULATE ( COUNTROWS ( fct_orders ), fct_orders[is_valid_order] = TRUE (), fct_orders[items] > 0 )
+)
+
+Active Customers =
+CALCULATE ( DISTINCTCOUNT ( fct_orders[customer_unique_id] ), fct_orders[is_valid_order] = TRUE () )
+
+Delivered Orders =
+CALCULATE ( COUNTROWS ( fct_orders ), fct_orders[is_delivered] = TRUE () )
+
+Late Orders =
+CALCULATE ( COUNTROWS ( fct_orders ), fct_orders[is_late] = TRUE () )
+
+Late Delivery Rate =
+DIVIDE ( [Late Orders], [Delivered Orders] )
+
+Median Delivery Days =
+CALCULATE ( MEDIAN ( fct_orders[delivery_days] ), fct_orders[is_delivered] = TRUE () )
+
+Avg Review Score =
+AVERAGE ( fct_orders[review_score] )
+
+Low Review Rate =
+DIVIDE (
+    CALCULATE ( COUNTROWS ( fct_orders ), fct_orders[review_score] <= 2 ),
+    CALCULATE ( COUNTROWS ( fct_orders ), NOT ISBLANK ( fct_orders[review_score] ) )
+)
+
+Cancel Rate =
+DIVIDE (
+    CALCULATE ( COUNTROWS ( fct_orders ), fct_orders[order_status] = "canceled" ),
+    COUNTROWS ( fct_orders )
+)
+
+// ---- time intelligence (requires the dim_date relationship and "Mark as date table")
+
+GMV Previous Year =
+CALCULATE ( [GMV], SAMEPERIODLASTYEAR ( dim_date[date] ) )
+
+GMV YoY % =
+DIVIDE ( [GMV] - [GMV Previous Year], [GMV Previous Year] )
+
+GMV Running Total =
+CALCULATE ( [GMV], DATESYTD ( dim_date[date] ) )
+
+// ---- customers
+
+Repeat Customer Rate =
+DIVIDE (
+    CALCULATE ( COUNTROWS ( dim_customers ), dim_customers[is_repeat_customer] = TRUE () ),
+    COUNTROWS ( dim_customers )
+)
+
+New Customer Orders =
+CALCULATE (
+    COUNTROWS ( fct_orders ),
+    fct_orders[is_valid_order] = TRUE (),
+    fct_orders[customer_order_number] = 1
+)
+
+// ---- sellers
+
+Seller Revenue Share =
+DIVIDE ( SUM ( seller_scorecard[revenue] ), CALCULATE ( SUM ( seller_scorecard[revenue] ), ALL ( seller_scorecard ) ) )
+
+At-Risk Sellers =
+CALCULATE ( COUNTROWS ( seller_scorecard ), seller_scorecard[is_at_risk] = TRUE () )
+
+Top 10% Seller Revenue Share =
+VAR n = COUNTROWS ( ALL ( seller_scorecard ) )
+VAR topN = ROUND ( n * 0.1, 0 )
+RETURN
+    DIVIDE (
+        CALCULATE ( SUM ( seller_scorecard[revenue] ), ALL ( seller_scorecard ), seller_scorecard[revenue_rank] <= topN ),
+        CALCULATE ( SUM ( seller_scorecard[revenue] ), ALL ( seller_scorecard ) )
+    )

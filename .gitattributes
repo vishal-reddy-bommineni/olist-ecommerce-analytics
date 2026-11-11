@@ -1,0 +1,5 @@
+# Count dbt SQL models in GitHub's language statistics
+*.sql linguist-detectable=true linguist-language=SQL
+*.dax linguist-detectable=false
+reports/** linguist-generated=true
+data/** linguist-generated=true

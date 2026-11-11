@@ -1,0 +1,9 @@
+# dbt connection profile. Run dbt from the repository root:
+#   dbt build --project-dir dbt --profiles-dir dbt
+olist:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "{{ env_var('OLIST_DB_PATH', 'data/olist.duckdb') }}"
+      threads: 4

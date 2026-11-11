@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: "Olist CSVs loaded unchanged (explicit types) by src/load_raw.py"
+    tables:
+      - name: orders
+      - name: customers
+      - name: order_items
+      - name: order_payments
+      - name: order_reviews
+      - name: products
+      - name: sellers
+      - name: category_translation

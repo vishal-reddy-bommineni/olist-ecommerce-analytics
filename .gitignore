@@ -1,0 +1,24 @@
+# raw data (download from Kaggle, see data/README.md) and the local database
+data/raw/*.csv
+data/raw/*.zip
+data/*.duckdb
+data/*.duckdb.wal
+# dbt
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+logs/
+# optional Power BI CSV export (large)
+powerbi/data/
+# python / tools
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+.vscode/
+.idea/
+.env
+.streamlit/secrets.toml
+.DS_Store
+dbt/.user.yml

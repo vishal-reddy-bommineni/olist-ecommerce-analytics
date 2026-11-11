@@ -1,0 +1,45 @@
+version: 2
+
+models:
+  - name: fct_orders
+    description: "One row per order with value, delivery, payment and review"
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]
+      - name: customer_unique_id
+        data_tests: [not_null]
+  - name: fct_order_items
+    columns:
+      - name: order_item_key
+        data_tests: [unique, not_null]
+  - name: dim_customers
+    columns:
+      - name: customer_unique_id
+        data_tests: [unique, not_null]
+  - name: dim_products
+    columns:
+      - name: product_id
+        data_tests: [unique, not_null]
+  - name: dim_sellers
+    columns:
+      - name: seller_id
+        data_tests: [unique, not_null]
+  - name: dim_date
+    columns:
+      - name: date
+        data_tests: [unique, not_null]
+  - name: seller_scorecard
+    columns:
+      - name: seller_id
+        data_tests: [unique, not_null]
+  - name: mart_monthly_kpis
+    columns:
+      - name: order_month
+        data_tests: [unique, not_null]
+  - name: mart_cohort_retention
+    data_tests:
+      - unique_combination_of_columns:
+          arguments: {columns: [cohort_month, months_since_first]}
+    columns:
+      - name: retention_rate
+        data_tests: [between_zero_and_one]
