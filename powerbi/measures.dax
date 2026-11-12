@@ -37,7 +37,7 @@ AVERAGE ( fct_orders[review_score] )
 
 Low Review Rate =
 DIVIDE (
-    CALCULATE ( COUNTROWS ( fct_orders ), fct_orders[review_score] <= 2 ),
+    CALCULATE ( COUNTROWS ( fct_orders ), fct_orders[review_score] <= 2, NOT ISBLANK ( fct_orders[review_score] ) ),
     CALCULATE ( COUNTROWS ( fct_orders ), NOT ISBLANK ( fct_orders[review_score] ) )
 )
 
@@ -82,10 +82,14 @@ At-Risk Sellers =
 CALCULATE ( COUNTROWS ( seller_scorecard ), seller_scorecard[is_at_risk] = TRUE () )
 
 Top 10% Seller Revenue Share =
-VAR n = COUNTROWS ( ALL ( seller_scorecard ) )
-VAR topN = ROUND ( n * 0.1, 0 )
+VAR seller_count = COUNTROWS ( ALL ( seller_scorecard ) )
+VAR top_count = ROUND ( seller_count * 0.1, 0 )
 RETURN
     DIVIDE (
-        CALCULATE ( SUM ( seller_scorecard[revenue] ), ALL ( seller_scorecard ), seller_scorecard[revenue_rank] <= topN ),
+        CALCULATE (
+            SUM ( seller_scorecard[revenue] ),
+            ALL ( seller_scorecard ),
+            seller_scorecard[revenue_rank] <= top_count
+        ),
         CALCULATE ( SUM ( seller_scorecard[revenue] ), ALL ( seller_scorecard ) )
     )

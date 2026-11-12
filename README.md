@@ -121,8 +121,20 @@ and state filters. It reads the Parquet marts in `data/marts/`, so it runs witho
 |---|---|
 | ![Delivery tab](docs/screenshots/delivery.png) | ![Sellers tab](docs/screenshots/sellers.png) |
 
-Power BI: `powerbi/BUILD_GUIDE.md` (star-schema relationships, Power Query loading) and `powerbi/measures.dax`
-(20 DAX measures including time intelligence).
+### Power BI
+The same star schema in Power BI (`powerbi/olist_dashboard.pbix`, PDF export `powerbi/olist_dashboard.pdf`):
+Parquet loaded with Power Query, one-directional relationships, a marked date table and 20 DAX measures
+including time intelligence (`powerbi/measures.dax`). Every card was checked against the Python output.
+Build steps: `powerbi/BUILD_GUIDE.md`.
+
+**Overview:** KPIs, monthly GMV vs late-delivery rate, review trend
+![Power BI overview](powerbi/screenshots/page1.png)
+
+**Delivery & satisfaction:** share of 1-2 star reviews by delivery vs promised date; delivery by state
+![Power BI delivery](powerbi/screenshots/page2.png)
+
+**Sellers & categories:** at-risk sellers, late rate vs review by seller, top categories
+![Power BI sellers](powerbi/screenshots/page3.png)
 
 ## Run it
 ```bash
